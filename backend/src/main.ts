@@ -3,13 +3,11 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-// O ValidationPipe é como o @Valid do Spring
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  // configuração do swagger
   const config = new DocumentBuilder()
     .setTitle('Gestão de Ativos de TI')
     .setDescription('Api para CRUD de equipamentos')
@@ -19,6 +17,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  app.enableCors({ origin: 'http://localhost:3000' });
+
+  await app.listen(3001);
 }
 bootstrap();
