@@ -14,7 +14,7 @@ export enum EquipamentoStatus {
 @Entity({ name: 'equipamento' })
 export class EquipamentoEntity {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id?: number;
 
   @Column({ type: 'varchar', nullable: false })
   nome!: string;
@@ -23,7 +23,7 @@ export class EquipamentoEntity {
   tipo!: EquipamentoTipo;
 
   @Column({ type: 'date', name: 'data_aquisicao' })
-  dataAquisicao!: Date;
+  dataAquisicao?: Date;
 
   @Column({ type: 'enum', enum: EquipamentoStatus, default: 'Ativo' })
   status!: EquipamentoStatus;
