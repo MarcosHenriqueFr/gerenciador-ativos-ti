@@ -60,6 +60,17 @@ export class EquipamentoService {
     };
   }
 
+  async deletarPorId(id: number): Promise<undefined> {
+    const equipamentoDeletado = await this.repository.delete(id);
+
+    if (!equipamentoDeletado.affected) {
+      throw new HttpException(
+        'O equipamento não foi encontrado no sistema',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   private mapearDtoParaEntidade(
     equipamento: RequestEquipamentoDTO,
   ): Partial<EquipamentoEntity> {
