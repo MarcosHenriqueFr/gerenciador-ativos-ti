@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EquipamentoEntity } from 'src/db/entities/equipamento.entity';
@@ -17,6 +17,21 @@ export class EquipamentoService {
 
     const equipamentoCriado = await this.repository.save(equipamentoParaSalvar);
     return this.mapearEntidadeParaDto(equipamentoCriado);
+  }
+
+  async buscarPorId(id: number): Promise<ResponseEquipamentoDTO> {
+    const equipamentoEncontrado = await this.repository.findOne({
+      where: { id },
+    });
+
+    if (!equipamentoEncontrado) {
+      throw new HttpException(
+        'Esse equipamento não existe no sistema',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return this.mapearEntidadeParaDto(equipamentoEncontrado);
   }
 
   private mapearDtoParaEntidade(
