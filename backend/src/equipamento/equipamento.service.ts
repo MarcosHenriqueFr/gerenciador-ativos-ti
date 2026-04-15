@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { EquipamentoEntity } from 'src/db/entities/equipamento.entity';
 import { RequestEquipamentoDTO } from './request-equipamento.dto';
 import { ResponseEquipamentoDTO } from './response-equipamento.dto';
+import { ResponsePaginacaoDTO } from './response-paginacao.dto';
 
 @Injectable()
 export class EquipamentoService {
@@ -32,6 +33,31 @@ export class EquipamentoService {
     }
 
     return this.mapearEntidadeParaDto(equipamentoEncontrado);
+  }
+
+  async buscarTodos(
+    page: number,
+    limit: number,
+  ): Promise<ResponsePaginacaoDTO> {
+    const pulo = (page - 1) * limit;
+
+    const [data, total] = await this.repository.findAndCount({
+      skip: pulo,
+      take: limit,
+    });
+
+    const listaRespostas = data.map((entidade) =>
+      this.mapearEntidadeParaDto(entidade),
+    );
+
+    return {
+      data: listaRespostas,
+      meta: {
+        total: total,
+        page: page,
+        lastPage: Math.ceil(total / limit),
+      },
+    };
   }
 
   private mapearDtoParaEntidade(
