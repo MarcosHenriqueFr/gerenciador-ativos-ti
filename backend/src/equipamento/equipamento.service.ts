@@ -1,10 +1,22 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EquipamentoEntity } from 'src/db/entities/equipamento.entity';
+import {
+  EquipamentoEntity,
+  EquipamentoStatus,
+  EquipamentoTipo,
+} from 'src/db/entities/equipamento.entity';
 import { RequestEquipamentoDTO } from './request-equipamento.dto';
 import { ResponseEquipamentoDTO } from './response-equipamento.dto';
 import { ResponsePaginacaoDTO } from './response-paginacao.dto';
+import { UpdateEquipamentoDTO } from './request-update.dto';
+import { FiltroEquipamentoDTO } from './filtro-equipamento.dto';
+import { SelectQueryBuilder } from 'typeorm/browser';
 
 @Injectable()
 export class EquipamentoService {
@@ -21,6 +33,12 @@ export class EquipamentoService {
   }
 
   async buscarPorId(id: number): Promise<ResponseEquipamentoDTO> {
+    const equipamento = await this.buscarEquipamentoExistente(id);
+
+    return this.mapearEntidadeParaDto(equipamento);
+  }
+
+  async buscarEquipamentoExistente(id: number): Promise<EquipamentoEntity> {
     const equipamentoEncontrado = await this.repository.findOne({
       where: { id },
     });
@@ -32,19 +50,21 @@ export class EquipamentoService {
       );
     }
 
-    return this.mapearEntidadeParaDto(equipamentoEncontrado);
+    return equipamentoEncontrado;
   }
 
   async buscarTodos(
-    page: number,
-    limit: number,
+    query: FiltroEquipamentoDTO,
   ): Promise<ResponsePaginacaoDTO> {
-    const pulo = (page - 1) * limit;
+    const { page, limit, tipo, status } = query;
+    const constutorQuery = this.repository.createQueryBuilder('equipamento');
 
-    const [data, total] = await this.repository.findAndCount({
-      skip: pulo,
-      take: limit,
-    });
+    this.anexarTipoNaQuery(tipo, constutorQuery);
+    this.anexarStatusNaQuery(status, constutorQuery);
+
+    constutorQuery.skip((page - 1) * limit).take(limit);
+
+    const [data, total] = await constutorQuery.getManyAndCount();
 
     const listaRespostas = data.map((entidade) =>
       this.mapearEntidadeParaDto(entidade),
@@ -60,13 +80,56 @@ export class EquipamentoService {
     };
   }
 
+  anexarTipoNaQuery(
+    tipo: EquipamentoTipo | undefined,
+    cq: SelectQueryBuilder<EquipamentoEntity>,
+  ) {
+    if (tipo) {
+      cq.andWhere('equipamento.tipo = :tipo', { tipo });
+    }
+  }
+
+  anexarStatusNaQuery(
+    status: EquipamentoStatus | undefined,
+    cq: SelectQueryBuilder<EquipamentoEntity>,
+  ) {
+    if (status) {
+      cq.andWhere('equipamento.status = :status', { status });
+    }
+  }
+
+  async atualizar(
+    id: number,
+    dto: UpdateEquipamentoDTO,
+  ): Promise<ResponseEquipamentoDTO> {
+    const equipamento = await this.buscarEquipamentoExistente(id);
+
+    const dadosAtualizados = Object.fromEntries(
+      Object.entries(dto).filter(([_, valor]) => valor !== undefined),
+    );
+
+    Object.assign(equipamento, dadosAtualizados);
+    await this.repository.save(equipamento);
+
+    return this.mapearEntidadeParaDto(equipamento);
+  }
+
+  // TODO: Validação de usuário, onde somente um Supervisor tem acesso a esse endpoint
+  async atualizarStatus(id: number, status: EquipamentoStatus) {
+    const equipamento = await this.buscarEquipamentoExistente(id);
+
+    equipamento.status = status;
+    await this.repository.save(equipamento);
+
+    return this.mapearEntidadeParaDto(equipamento);
+  }
+
   async deletarPorId(id: number): Promise<undefined> {
     const equipamentoDeletado = await this.repository.delete(id);
 
     if (!equipamentoDeletado.affected) {
-      throw new HttpException(
+      throw new NotFoundException(
         'O equipamento não foi encontrado no sistema',
-        HttpStatus.BAD_REQUEST,
       );
     }
   }

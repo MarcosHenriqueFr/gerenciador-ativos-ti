@@ -9,12 +9,16 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 import { EquipamentoService } from './equipamento.service';
 import { RequestEquipamentoDTO } from './request-equipamento.dto';
 import { ResponseEquipamentoDTO } from './response-equipamento.dto';
 import { ResponsePaginacaoDTO } from './response-paginacao.dto';
 import { ApiCreatedResponse, ApiNoContentResponse } from '@nestjs/swagger';
+import { UpdateEquipamentoDTO } from './request-update.dto';
+import { EquipamentoStatus } from 'src/db/entities/equipamento.entity';
+import { FiltroEquipamentoDTO } from './filtro-equipamento.dto';
 
 @Controller('equipamentos')
 export class EquipamentoController {
@@ -35,10 +39,25 @@ export class EquipamentoController {
 
   @Get()
   buscarTodos(
-    @Query('page', ParseIntPipe) page: number = 1,
-    @Query('limit', ParseIntPipe) limit: number = 10,
+    @Query() query: FiltroEquipamentoDTO,
   ): Promise<ResponsePaginacaoDTO> {
-    return this.equipamentoService.buscarTodos(page, limit);
+    return this.equipamentoService.buscarTodos(query);
+  }
+
+  @Patch('/:id')
+  async atualizar(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateEquipamentoDTO,
+  ): Promise<ResponseEquipamentoDTO> {
+    return this.equipamentoService.atualizar(id, dto);
+  }
+
+  @Patch('/:id/status')
+  async atualizarStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('status') status: EquipamentoStatus,
+  ) {
+    return this.equipamentoService.atualizarStatus(id, status);
   }
 
   @Delete('/:id')
