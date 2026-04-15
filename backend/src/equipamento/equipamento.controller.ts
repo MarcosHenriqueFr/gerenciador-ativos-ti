@@ -12,13 +12,17 @@ import {
   Patch,
 } from '@nestjs/common';
 import { EquipamentoService } from './equipamento.service';
-import { RequestEquipamentoDTO } from './request-equipamento.dto';
-import { ResponseEquipamentoDTO } from './response-equipamento.dto';
-import { ResponsePaginacaoDTO } from './response-paginacao.dto';
-import { ApiCreatedResponse, ApiNoContentResponse } from '@nestjs/swagger';
-import { UpdateEquipamentoDTO } from './request-update.dto';
+import { RequestEquipamentoDTO } from './dto/request/request-equipamento.dto';
+import { ResponseEquipamentoDTO } from './dto/response/response-equipamento.dto';
+import { ResponsePaginacaoDTO } from './dto/response/response-paginacao.dto';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
+import { UpdateEquipamentoDTO } from './dto/request/request-update.dto';
 import { EquipamentoStatus } from 'src/db/entities/equipamento.entity';
-import { FiltroEquipamentoDTO } from './filtro-equipamento.dto';
+import { FiltroEquipamentoDTO } from './dto/query/filtro-equipamento.dto';
 
 @Controller('equipamentos')
 export class EquipamentoController {
@@ -38,6 +42,9 @@ export class EquipamentoController {
   }
 
   @Get()
+  @ApiOkResponse({
+    description: 'Lista de equipamentos de acordo com as informações do filtro',
+  })
   buscarTodos(
     @Query() query: FiltroEquipamentoDTO,
   ): Promise<ResponsePaginacaoDTO> {

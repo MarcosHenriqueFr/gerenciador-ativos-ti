@@ -11,11 +11,11 @@ import {
   EquipamentoStatus,
   EquipamentoTipo,
 } from 'src/db/entities/equipamento.entity';
-import { RequestEquipamentoDTO } from './request-equipamento.dto';
-import { ResponseEquipamentoDTO } from './response-equipamento.dto';
-import { ResponsePaginacaoDTO } from './response-paginacao.dto';
-import { UpdateEquipamentoDTO } from './request-update.dto';
-import { FiltroEquipamentoDTO } from './filtro-equipamento.dto';
+import { RequestEquipamentoDTO } from './dto/request/request-equipamento.dto';
+import { ResponseEquipamentoDTO } from './dto/response/response-equipamento.dto';
+import { ResponsePaginacaoDTO } from './dto/response/response-paginacao.dto';
+import { UpdateEquipamentoDTO } from './dto/request/request-update.dto';
+import { FiltroEquipamentoDTO } from './dto/query/filtro-equipamento.dto';
 import { SelectQueryBuilder } from 'typeorm/browser';
 
 @Injectable()
