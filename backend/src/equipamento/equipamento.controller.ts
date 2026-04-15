@@ -1,6 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { EquipamentoService } from './equipamento.service';
-import { EquipamentoEntity } from 'src/db/entities/equipamento.entity';
+import { RequestEquipamentoDTO } from './request-equipamento.dto';
+import { ResponseEquipamentoDTO } from './response-equipamento.dto';
 
 @Controller('equipamentos')
 export class EquipamentoController {
@@ -8,8 +9,8 @@ export class EquipamentoController {
 
   @Post()
   async criar(
-    @Body() equipamento: EquipamentoEntity,
-  ): Promise<EquipamentoEntity> {
+    @Body() equipamento: RequestEquipamentoDTO,
+  ): Promise<ResponseEquipamentoDTO> {
     return this.equipamentoService.criar(equipamento);
   }
 }
