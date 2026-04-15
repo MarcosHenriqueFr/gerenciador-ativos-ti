@@ -12,7 +12,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { EquipamentoService } from './equipamento.service';
-import { RequestEquipamentoDTO } from './dto/request/request-equipamento.dto';
+import { RequestEquipamentoDTO } from './dto/request/create-equipamento.dto';
 import { ResponseEquipamentoDTO } from './dto/response/response-equipamento.dto';
 import { ResponsePaginacaoDTO } from './dto/response/response-paginacao.dto';
 import {
@@ -20,7 +20,7 @@ import {
   ApiNoContentResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { UpdateEquipamentoDTO } from './dto/request/request-update.dto';
+import { UpdateEquipamentoDTO } from './dto/request/create-update.dto';
 import { EquipamentoStatus } from 'src/db/entities/equipamento.entity';
 import { FiltroEquipamentoDTO } from './dto/query/filtro-equipamento.dto';
 
