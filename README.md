@@ -10,6 +10,7 @@
     <li>Docker e Docker Compose
     <li>TypeScript
     <li>TypeORM
+    <li>Swagger
 </ul>
 
 ## Como testar o projeto 🚀
@@ -54,6 +55,8 @@ Bash
 ```bash
 docker compose up --build
 ```
+
+**Agora é só acessar o frontend em: "http://localhost:5173"**
 
 #### Comandos Úteis de Manutenção:
 

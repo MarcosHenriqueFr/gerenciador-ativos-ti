@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: startup
+    container_name: postgres
+    volumes:
+      - "./db_scripts/init.sql:/docker-entrypoint-initdb.d/init.sql"
+    networks:
+      - main
+
+  nest:
+    container_name: nest_app
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    env_file: ./backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - main
+
+  react:
+    container_name: react_app
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - nest
+    networks:
+      - main
+
+networks:
+  main:
+    driver: bridge
