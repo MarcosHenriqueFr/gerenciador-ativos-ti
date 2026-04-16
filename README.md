@@ -43,7 +43,9 @@ cd gerenciador-ativos-ti
 
 #### 1.Backend (.env)
 
-Crie um arquivo .env dentro da pasta backend/ seguindo o modelo do seu projeto. O Docker Compose utilizará essas variáveis para conectar ao container do PostgreSQL. **Siga informações parecidas com o .env.example na raiz do projeto backend**
+**Renomeie o arquivo do .env.example para .env**
+OU
+Crie um arquivo .env dentro da pasta backend/ de acordo com suas necessidades
 
 ### Rodando o projeto
 
